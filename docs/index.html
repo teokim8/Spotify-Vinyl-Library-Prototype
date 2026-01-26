@@ -614,7 +614,8 @@
 
         const t = clamp(progress, 0, 1);
         const fallT = easeOutQuart(t);
-        const rotate = lerp(TILT_FRONT, ROT_END, fallT);
+        // Flip towards user (positive rotation instead of negative)
+        const rotate = lerp(TILT_FRONT, -ROT_END, fallT);
         const popZ = lerp(0, POPZ_END, fallT);
         const dropY = lerp(0, DROPY_END, fallT * fallT);
 
