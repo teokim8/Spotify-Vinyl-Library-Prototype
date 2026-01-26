@@ -54,6 +54,25 @@
         border-radius: 0;
       }
 
+      /* Fit to viewport height with padding */
+      @media (max-height: 900px) {
+        .frame {
+          max-height: calc(100vh - 120px);
+        }
+      }
+
+      @media (max-height: 800px) {
+        .frame {
+          max-height: calc(100vh - 100px);
+        }
+      }
+
+      @media (max-height: 700px) {
+        .frame {
+          max-height: calc(100vh - 80px);
+        }
+      }
+
       /* Large Desktop: Full size phone */
       @media (min-width: 1200px) {
         .frame {
@@ -127,6 +146,30 @@
       }
 
       /* Adjust carousel height on smaller screens */
+      @media (max-height: 900px) {
+        .interaction-zone {
+          height: 370px;
+        }
+        :root {
+          --cover: 280px;
+          --perspective: 1230px;
+          --depth: 70px;
+          --rise: 42px;
+        }
+      }
+
+      @media (max-height: 800px) {
+        .interaction-zone {
+          height: 340px;
+        }
+        :root {
+          --cover: 256px;
+          --perspective: 1120px;
+          --depth: 64px;
+          --rise: 38px;
+        }
+      }
+
       @media (min-width: 900px) and (max-width: 1199px) {
         .interaction-zone {
           height: 395px;
@@ -165,13 +208,13 @@
 
       @media (max-height: 700px) {
         .interaction-zone {
-          height: 350px;
+          height: 310px;
         }
         :root {
-          --cover: 260px;
-          --perspective: 1200px;
-          --depth: 65px;
-          --rise: 40px;
+          --cover: 232px;
+          --perspective: 1050px;
+          --depth: 58px;
+          --rise: 35px;
         }
       }
 
@@ -434,10 +477,30 @@
         transform: translate(-50%, -50%);
         width: 450px;
         height: auto;
+        max-height: calc(100vh - 100px);
         z-index: 99999;
         pointer-events: none;
         opacity: 1;
         transition: opacity 0.3s;
+      }
+
+      /* Fit mockup to viewport */
+      @media (max-height: 900px) {
+        .mockup-overlay {
+          width: 380px;
+        }
+      }
+
+      @media (max-height: 800px) {
+        .mockup-overlay {
+          width: 350px;
+        }
+      }
+
+      @media (max-height: 700px) {
+        .mockup-overlay {
+          width: 320px;
+        }
       }
 
       /* Scale mockup for different desktop sizes */
