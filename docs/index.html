@@ -27,6 +27,9 @@
         --rise: 48px;
         --taper: 0.65;
         --flipMs: 700;
+
+        /* Scale factor for responsive sizing */
+        --scale-factor: 1;
       }
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,86 +40,33 @@
         background: #000;
       }
 
-      /* Main Frame Container - Responsive */
-      .frame {
-        width: 100%;
-        max-width: 402px;
-        height: 100vh;
-        max-height: 874px;
+      /* Container for scaling */
+      .scale-container {
         position: fixed;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform-origin: center center;
+        transform: translate(-50%, -50%) scale(var(--scale-factor));
+        transition: transform 0.3s ease;
+      }
+
+      /* Main Frame Container - Original size maintained */
+      .frame {
+        width: 402px;
+        height: 874px;
         display: flex;
         flex-direction: column;
         background: var(--bg-dark);
         overflow: hidden;
-        border-radius: 0;
+        border-radius: 50px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       }
 
-      /* Fit to viewport height with padding */
-      @media (max-height: 900px) {
-        .frame {
-          max-height: calc(100vh - 120px);
-        }
-      }
-
-      @media (max-height: 800px) {
-        .frame {
-          max-height: calc(100vh - 100px);
-        }
-      }
-
-      @media (max-height: 700px) {
-        .frame {
-          max-height: calc(100vh - 80px);
-        }
-      }
-
-      /* Large Desktop: Full size phone */
-      @media (min-width: 1200px) {
-        .frame {
-          border-radius: 50px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-      }
-
-      /* Medium Desktop: Scaled down */
-      @media (min-width: 900px) and (max-width: 1199px) {
-        .frame {
-          max-width: 360px;
-          max-height: 780px;
-          border-radius: 45px;
-          box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        }
-      }
-
-      /* Small Desktop/Tablet: More compact */
-      @media (min-width: 600px) and (max-width: 899px) {
-        .frame {
-          max-width: 340px;
-          max-height: 740px;
-          border-radius: 40px;
-          box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-      }
-
-      /* Tablet Portrait: Smaller frame */
-      @media (min-width: 500px) and (max-width: 599px) {
-        .frame {
-          max-width: 320px;
-          max-height: 696px;
-          border-radius: 35px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-      }
-
-      /* Mobile: Full screen */
+      /* Mobile: Remove border radius and shadow */
       @media (max-width: 499px) {
         .frame {
-          max-width: 100%;
-          max-height: 100vh;
           border-radius: 0;
+          box-shadow: none;
         }
       }
 
@@ -133,7 +83,7 @@
         display: block;
       }
 
-      /* Interaction Zone (Carousel Area) - Responsive */
+      /* Interaction Zone (Carousel Area) - Masked Viewport */
       .interaction-zone {
         height: var(--interaction-zone-height);
         flex-shrink: 0;
@@ -141,93 +91,9 @@
         position: relative;
         overflow: hidden;
         touch-action: none;
+        /* Clip everything outside this container */
         clip-path: inset(0);
         -webkit-clip-path: inset(0);
-      }
-
-      /* Adjust carousel height on smaller screens */
-      @media (max-height: 900px) {
-        .interaction-zone {
-          height: 370px;
-        }
-        :root {
-          --cover: 280px;
-          --perspective: 1230px;
-          --depth: 70px;
-          --rise: 42px;
-        }
-      }
-
-      @media (max-height: 800px) {
-        .interaction-zone {
-          height: 340px;
-        }
-        :root {
-          --cover: 256px;
-          --perspective: 1120px;
-          --depth: 64px;
-          --rise: 38px;
-        }
-      }
-
-      @media (min-width: 900px) and (max-width: 1199px) {
-        .interaction-zone {
-          height: 395px;
-        }
-        :root {
-          --cover: 288px;
-          --perspective: 1260px;
-          --depth: 72px;
-          --rise: 43px;
-        }
-      }
-
-      @media (min-width: 600px) and (max-width: 899px) {
-        .interaction-zone {
-          height: 374px;
-        }
-        :root {
-          --cover: 272px;
-          --perspective: 1190px;
-          --depth: 68px;
-          --rise: 41px;
-        }
-      }
-
-      @media (min-width: 500px) and (max-width: 599px) {
-        .interaction-zone {
-          height: 352px;
-        }
-        :root {
-          --cover: 256px;
-          --perspective: 1120px;
-          --depth: 64px;
-          --rise: 38px;
-        }
-      }
-
-      @media (max-height: 700px) {
-        .interaction-zone {
-          height: 310px;
-        }
-        :root {
-          --cover: 232px;
-          --perspective: 1050px;
-          --depth: 58px;
-          --rise: 35px;
-        }
-      }
-
-      @media (max-height: 600px) {
-        .interaction-zone {
-          height: 280px;
-        }
-        :root {
-          --cover: 220px;
-          --perspective: 1000px;
-          --depth: 55px;
-          --rise: 32px;
-        }
       }
 
       .carousel-container {
@@ -238,6 +104,7 @@
         align-items: center;
         perspective: var(--perspective);
         perspective-origin: 50% 55%;
+        /* Allow content to extend and be clipped */
         overflow: visible;
       }
 
@@ -246,6 +113,7 @@
         width: var(--cover);
         height: var(--cover);
         transform-style: preserve-3d;
+        /* Position stack centered with minimal offset */
         transform: translateY(15px);
       }
 
@@ -290,7 +158,7 @@
         box-shadow: 0 12px 40px rgba(0,0,0,0.25);
       }
 
-      /* Album List - Responsive */
+      /* Album List */
       .album-list {
         background: var(--bg-dark);
         flex: 1;
@@ -309,63 +177,6 @@
         transition: background-color 0.3s ease;
         border-top: 1px solid transparent;
         cursor: pointer;
-      }
-
-      /* Medium desktop adjustments */
-      @media (min-width: 900px) and (max-width: 1199px) {
-        .album-item {
-          height: 86px;
-          padding: 10px 18px;
-        }
-        .album-thumbnail {
-          width: 64px;
-          height: 64px;
-        }
-      }
-
-      /* Small desktop adjustments */
-      @media (min-width: 600px) and (max-width: 899px) {
-        .album-item {
-          height: 82px;
-          padding: 10px 16px;
-        }
-        .album-thumbnail {
-          width: 60px;
-          height: 60px;
-        }
-        .album-title {
-          font-size: 16px;
-        }
-        .album-artist {
-          font-size: 14px;
-        }
-      }
-
-      /* Tablet adjustments */
-      @media (min-width: 500px) and (max-width: 599px) {
-        .album-item {
-          height: 77px;
-          padding: 9px 14px;
-          gap: 12px;
-        }
-        .album-thumbnail {
-          width: 56px;
-          height: 56px;
-        }
-        .album-title {
-          font-size: 15px;
-        }
-        .album-artist {
-          font-size: 13px;
-        }
-      }
-
-      /* Smaller padding on mobile */
-      @media (max-width: 380px) {
-        .album-item {
-          padding: 10px 16px;
-          gap: 12px;
-        }
       }
 
       .album-item:active {
@@ -396,14 +207,6 @@
         background: #2a2a2a;
       }
 
-      /* Smaller thumbnails on very small screens */
-      @media (max-width: 360px) {
-        .album-thumbnail {
-          width: 60px;
-          height: 60px;
-        }
-      }
-
       .album-info {
         flex: 1;
         min-width: 0;
@@ -425,16 +228,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-      }
-
-      /* Responsive text sizes */
-      @media (max-width: 360px) {
-        .album-title {
-          font-size: 15px;
-        }
-        .album-artist {
-          font-size: 13px;
-        }
       }
 
       .album-more {
@@ -469,57 +262,18 @@
         scrollbar-width: none;
       }
 
-      /* Phone Mockup Overlay - Responsive scaling */
+      /* Phone Mockup Overlay */
       .mockup-overlay {
         position: fixed;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform-origin: center center;
+        transform: translate(-50%, -50%) scale(var(--scale-factor));
         width: 450px;
         height: auto;
-        max-height: calc(100vh - 100px);
         z-index: 99999;
         pointer-events: none;
-        opacity: 1;
-        transition: opacity 0.3s;
-      }
-
-      /* Fit mockup to viewport */
-      @media (max-height: 900px) {
-        .mockup-overlay {
-          width: 380px;
-        }
-      }
-
-      @media (max-height: 800px) {
-        .mockup-overlay {
-          width: 350px;
-        }
-      }
-
-      @media (max-height: 700px) {
-        .mockup-overlay {
-          width: 320px;
-        }
-      }
-
-      /* Scale mockup for different desktop sizes */
-      @media (min-width: 900px) and (max-width: 1199px) {
-        .mockup-overlay {
-          width: 405px;
-        }
-      }
-
-      @media (min-width: 600px) and (max-width: 899px) {
-        .mockup-overlay {
-          width: 383px;
-        }
-      }
-
-      @media (min-width: 500px) and (max-width: 599px) {
-        .mockup-overlay {
-          width: 360px;
-        }
+        transition: transform 0.3s ease;
       }
 
       .mockup-overlay img {
@@ -531,12 +285,11 @@
       /* Hide mockup on mobile */
       @media (max-width: 499px) {
         .mockup-overlay {
-          opacity: 0;
-          pointer-events: none;
+          display: none;
         }
       }
 
-      /* Credits Text - Responsive */
+      /* Credits Text */
       .credits {
         position: fixed;
         bottom: 40px;
@@ -545,32 +298,6 @@
         text-align: center;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         z-index: 100000;
-      }
-
-      /* Adjust credits for smaller desktops */
-      @media (min-width: 600px) and (max-width: 899px) {
-        .credits {
-          bottom: 30px;
-        }
-        .credits-title {
-          font-size: 16px;
-        }
-        .credits-author {
-          font-size: 14px;
-        }
-      }
-
-      @media (min-width: 500px) and (max-width: 599px) {
-        .credits {
-          bottom: 25px;
-        }
-        .credits-title {
-          font-size: 15px;
-          margin-bottom: 6px;
-        }
-        .credits-author {
-          font-size: 13px;
-        }
       }
 
       /* Move credits on mobile */
@@ -583,20 +310,6 @@
         .credits-author,
         .credits-author a {
           color: #ffffff;
-        }
-      }
-
-      /* Smaller credits text on mobile */
-      @media (max-height: 600px) {
-        .credits {
-          top: 10px;
-        }
-        .credits-title {
-          font-size: 14px;
-          margin-bottom: 4px;
-        }
-        .credits-author {
-          font-size: 12px;
         }
       }
 
@@ -637,29 +350,60 @@
       <div class="credits-author">by <a href="https://teokim.xyz/" target="_blank">Teo Kim</a></div>
     </div>
 
-    <div class="frame">
-      <!-- Status Bar -->
-      <div class="status-bar">
-        <img src="./export/System Top.jpg" alt="Status Bar" class="status-bar-img">
-      </div>
-
-      <!-- Interaction Zone -->
-      <div class="interaction-zone" id="interactionZone">
-        <div class="carousel-container">
-          <div class="stack" id="stack"></div>
+    <div class="scale-container">
+      <div class="frame">
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <img src="./export/System Top.jpg" alt="Status Bar" class="status-bar-img">
         </div>
-      </div>
 
-      <!-- Album List -->
-      <div class="album-list" id="albumList"></div>
+        <!-- Interaction Zone -->
+        <div class="interaction-zone" id="interactionZone">
+          <div class="carousel-container">
+            <div class="stack" id="stack"></div>
+          </div>
+        </div>
 
-      <!-- Bottom Navigation -->
-      <div class="bottom-nav">
-        <img src="./export/Nav.jpg" alt="Navigation" class="bottom-nav-img">
+        <!-- Album List -->
+        <div class="album-list" id="albumList"></div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <img src="./export/Nav.jpg" alt="Navigation" class="bottom-nav-img">
+        </div>
       </div>
     </div>
 
     <script>
+      // Calculate and apply scale factor
+      function calculateScale() {
+        const frameHeight = 874;
+        const frameWidth = 402;
+        const padding = 120; // Padding for credits and spacing
+        
+        const availableHeight = window.innerHeight - padding;
+        const availableWidth = window.innerWidth - 40; // Side padding
+        
+        const scaleByHeight = availableHeight / frameHeight;
+        const scaleByWidth = availableWidth / frameWidth;
+        
+        // Use the smaller scale to ensure it fits
+        let scale = Math.min(scaleByHeight, scaleByWidth, 1);
+        
+        // On mobile, use full width/height
+        if (window.innerWidth <= 499) {
+          const mobileScaleWidth = window.innerWidth / frameWidth;
+          const mobileScaleHeight = window.innerHeight / frameHeight;
+          scale = Math.min(mobileScaleWidth, mobileScaleHeight);
+        }
+        
+        document.documentElement.style.setProperty('--scale-factor', scale);
+      }
+
+      // Apply scale on load and resize
+      calculateScale();
+      window.addEventListener('resize', calculateScale);
+
       // Album data from file names
       const fileNames = [
         "1. Keith Jarrett_The Koln Concert.jpg",
@@ -708,18 +452,14 @@
       const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
       const mod = (n, m) => ((n % m) + m) % m;
 
-      // Get current carousel constants (responsive)
-      function getCarouselConstants() {
-        return {
-          COVER: cssNum("--cover"),
-          TILT_FRONT: cssNum("--tiltFront"),
-          TILT_BACK: cssNum("--tiltBack"),
-          DEPTH: cssNum("--depth"),
-          RISE: cssNum("--rise"),
-          TAPER: cssNum("--taper"),
-          FLIP_MS: cssNum("--flipMs")
-        };
-      }
+      // Carousel constants
+      const COVER = cssNum("--cover");
+      const TILT_FRONT = cssNum("--tiltFront");
+      const TILT_BACK = cssNum("--tiltBack");
+      const DEPTH = cssNum("--depth");
+      const RISE = cssNum("--rise");
+      const TAPER = cssNum("--taper");
+      const FLIP_MS = cssNum("--flipMs");
 
       const VISIBLE = Math.min(albums.length, 8);
       const DRAG_THRESHOLD_PX = 40;
@@ -798,8 +538,6 @@
         refreshImages();
         updateActiveAlbum(head);
 
-        const { TILT_FRONT } = getCarouselConstants();
-
         // Animate the front card with a smooth fade in
         cards[0].style.opacity = "0";
         cards[0].style.transform = `translate(-50%, -50%) translate3d(0px, 0px, 0px) rotateX(${TILT_FRONT}deg) scale(0.95)`;
@@ -871,8 +609,6 @@
       }
 
       function layoutWithShift(shift) {
-        const { COVER, TILT_FRONT, TILT_BACK, DEPTH, RISE, TAPER } = getCarouselConstants();
-
         for (let slot = 0; slot < VISIBLE; slot++) {
           const el = cards[slot];
           const slotPos = slot - shift;
@@ -894,7 +630,6 @@
       }
 
       function resetTopple() {
-        const { TILT_FRONT } = getCarouselConstants();
         frontFade.style.opacity = "0";
         frontFade.style.filter = "blur(0px)";
         frontFade.style.transform = `translate(-50%, -50%) rotateX(${TILT_FRONT}deg)`;
@@ -913,8 +648,6 @@
         progress = 0;
         lastTs = 0;
 
-        const { TILT_FRONT } = getCarouselConstants();
-
         frontFadeImg.src = albums[head].coverUrl;
         frontFade.style.opacity = String(1 - INSTANT_FADE);
         frontFade.style.filter = `blur(${INSTANT_BLUR.toFixed(2)}px)`;
@@ -927,8 +660,6 @@
       function tick(ts) {
         if (!animating) return;
         if (!lastTs) lastTs = ts;
-
-        const { FLIP_MS, TILT_FRONT } = getCarouselConstants();
 
         const dt = ts - lastTs;
         lastTs = ts;
@@ -1025,15 +756,6 @@
           e.preventDefault();
           beginStep();
         }
-      });
-
-      // Handle window resize
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          layoutWithShift(0);
-        }, 100);
       });
 
       // Initialize
