@@ -34,12 +34,15 @@
         height: 100%;
         overflow: hidden;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: #000;
       }
 
-      /* Main Frame Container */
+      /* Main Frame Container - Responsive */
       .frame {
-        width: 402px;
-        height: 874px;
+        width: 100%;
+        max-width: 402px;
+        height: 100vh;
+        max-height: 874px;
         position: fixed;
         top: 50%;
         left: 50%;
@@ -48,7 +51,54 @@
         flex-direction: column;
         background: var(--bg-dark);
         overflow: hidden;
-        border-radius: 50px;
+        border-radius: 0;
+      }
+
+      /* Large Desktop: Full size phone */
+      @media (min-width: 1200px) {
+        .frame {
+          border-radius: 50px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+      }
+
+      /* Medium Desktop: Scaled down */
+      @media (min-width: 900px) and (max-width: 1199px) {
+        .frame {
+          max-width: 360px;
+          max-height: 780px;
+          border-radius: 45px;
+          box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+      }
+
+      /* Small Desktop/Tablet: More compact */
+      @media (min-width: 600px) and (max-width: 899px) {
+        .frame {
+          max-width: 340px;
+          max-height: 740px;
+          border-radius: 40px;
+          box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+      }
+
+      /* Tablet Portrait: Smaller frame */
+      @media (min-width: 500px) and (max-width: 599px) {
+        .frame {
+          max-width: 320px;
+          max-height: 696px;
+          border-radius: 35px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+      }
+
+      /* Mobile: Full screen */
+      @media (max-width: 499px) {
+        .frame {
+          max-width: 100%;
+          max-height: 100vh;
+          border-radius: 0;
+        }
       }
 
       /* Status Bar */
@@ -64,7 +114,7 @@
         display: block;
       }
 
-      /* Interaction Zone (Carousel Area) - Masked Viewport */
+      /* Interaction Zone (Carousel Area) - Responsive */
       .interaction-zone {
         height: var(--interaction-zone-height);
         flex-shrink: 0;
@@ -72,9 +122,69 @@
         position: relative;
         overflow: hidden;
         touch-action: none;
-        /* Clip everything outside this container */
         clip-path: inset(0);
         -webkit-clip-path: inset(0);
+      }
+
+      /* Adjust carousel height on smaller screens */
+      @media (min-width: 900px) and (max-width: 1199px) {
+        .interaction-zone {
+          height: 395px;
+        }
+        :root {
+          --cover: 288px;
+          --perspective: 1260px;
+          --depth: 72px;
+          --rise: 43px;
+        }
+      }
+
+      @media (min-width: 600px) and (max-width: 899px) {
+        .interaction-zone {
+          height: 374px;
+        }
+        :root {
+          --cover: 272px;
+          --perspective: 1190px;
+          --depth: 68px;
+          --rise: 41px;
+        }
+      }
+
+      @media (min-width: 500px) and (max-width: 599px) {
+        .interaction-zone {
+          height: 352px;
+        }
+        :root {
+          --cover: 256px;
+          --perspective: 1120px;
+          --depth: 64px;
+          --rise: 38px;
+        }
+      }
+
+      @media (max-height: 700px) {
+        .interaction-zone {
+          height: 350px;
+        }
+        :root {
+          --cover: 260px;
+          --perspective: 1200px;
+          --depth: 65px;
+          --rise: 40px;
+        }
+      }
+
+      @media (max-height: 600px) {
+        .interaction-zone {
+          height: 280px;
+        }
+        :root {
+          --cover: 220px;
+          --perspective: 1000px;
+          --depth: 55px;
+          --rise: 32px;
+        }
       }
 
       .carousel-container {
@@ -85,7 +195,6 @@
         align-items: center;
         perspective: var(--perspective);
         perspective-origin: 50% 55%;
-        /* Allow content to extend and be clipped */
         overflow: visible;
       }
 
@@ -94,7 +203,6 @@
         width: var(--cover);
         height: var(--cover);
         transform-style: preserve-3d;
-        /* Position stack centered with minimal offset */
         transform: translateY(15px);
       }
 
@@ -139,7 +247,7 @@
         box-shadow: 0 12px 40px rgba(0,0,0,0.25);
       }
 
-      /* Album List */
+      /* Album List - Responsive */
       .album-list {
         background: var(--bg-dark);
         flex: 1;
@@ -158,6 +266,63 @@
         transition: background-color 0.3s ease;
         border-top: 1px solid transparent;
         cursor: pointer;
+      }
+
+      /* Medium desktop adjustments */
+      @media (min-width: 900px) and (max-width: 1199px) {
+        .album-item {
+          height: 86px;
+          padding: 10px 18px;
+        }
+        .album-thumbnail {
+          width: 64px;
+          height: 64px;
+        }
+      }
+
+      /* Small desktop adjustments */
+      @media (min-width: 600px) and (max-width: 899px) {
+        .album-item {
+          height: 82px;
+          padding: 10px 16px;
+        }
+        .album-thumbnail {
+          width: 60px;
+          height: 60px;
+        }
+        .album-title {
+          font-size: 16px;
+        }
+        .album-artist {
+          font-size: 14px;
+        }
+      }
+
+      /* Tablet adjustments */
+      @media (min-width: 500px) and (max-width: 599px) {
+        .album-item {
+          height: 77px;
+          padding: 9px 14px;
+          gap: 12px;
+        }
+        .album-thumbnail {
+          width: 56px;
+          height: 56px;
+        }
+        .album-title {
+          font-size: 15px;
+        }
+        .album-artist {
+          font-size: 13px;
+        }
+      }
+
+      /* Smaller padding on mobile */
+      @media (max-width: 380px) {
+        .album-item {
+          padding: 10px 16px;
+          gap: 12px;
+        }
       }
 
       .album-item:active {
@@ -188,6 +353,14 @@
         background: #2a2a2a;
       }
 
+      /* Smaller thumbnails on very small screens */
+      @media (max-width: 360px) {
+        .album-thumbnail {
+          width: 60px;
+          height: 60px;
+        }
+      }
+
       .album-info {
         flex: 1;
         min-width: 0;
@@ -209,6 +382,16 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      /* Responsive text sizes */
+      @media (max-width: 360px) {
+        .album-title {
+          font-size: 15px;
+        }
+        .album-artist {
+          font-size: 13px;
+        }
       }
 
       .album-more {
@@ -243,7 +426,7 @@
         scrollbar-width: none;
       }
 
-      /* Phone Mockup Overlay */
+      /* Phone Mockup Overlay - Responsive scaling */
       .mockup-overlay {
         position: fixed;
         top: 50%;
@@ -253,6 +436,27 @@
         height: auto;
         z-index: 99999;
         pointer-events: none;
+        opacity: 1;
+        transition: opacity 0.3s;
+      }
+
+      /* Scale mockup for different desktop sizes */
+      @media (min-width: 900px) and (max-width: 1199px) {
+        .mockup-overlay {
+          width: 405px;
+        }
+      }
+
+      @media (min-width: 600px) and (max-width: 899px) {
+        .mockup-overlay {
+          width: 383px;
+        }
+      }
+
+      @media (min-width: 500px) and (max-width: 599px) {
+        .mockup-overlay {
+          width: 360px;
+        }
       }
 
       .mockup-overlay img {
@@ -261,7 +465,15 @@
         display: block;
       }
 
-      /* Credits Text */
+      /* Hide mockup on mobile */
+      @media (max-width: 499px) {
+        .mockup-overlay {
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+
+      /* Credits Text - Responsive */
       .credits {
         position: fixed;
         bottom: 40px;
@@ -270,6 +482,59 @@
         text-align: center;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         z-index: 100000;
+      }
+
+      /* Adjust credits for smaller desktops */
+      @media (min-width: 600px) and (max-width: 899px) {
+        .credits {
+          bottom: 30px;
+        }
+        .credits-title {
+          font-size: 16px;
+        }
+        .credits-author {
+          font-size: 14px;
+        }
+      }
+
+      @media (min-width: 500px) and (max-width: 599px) {
+        .credits {
+          bottom: 25px;
+        }
+        .credits-title {
+          font-size: 15px;
+          margin-bottom: 6px;
+        }
+        .credits-author {
+          font-size: 13px;
+        }
+      }
+
+      /* Move credits on mobile */
+      @media (max-width: 499px) {
+        .credits {
+          bottom: auto;
+          top: 20px;
+        }
+        .credits-title,
+        .credits-author,
+        .credits-author a {
+          color: #ffffff;
+        }
+      }
+
+      /* Smaller credits text on mobile */
+      @media (max-height: 600px) {
+        .credits {
+          top: 10px;
+        }
+        .credits-title {
+          font-size: 14px;
+          margin-bottom: 4px;
+        }
+        .credits-author {
+          font-size: 12px;
+        }
       }
 
       .credits-title {
@@ -380,14 +645,18 @@
       const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
       const mod = (n, m) => ((n % m) + m) % m;
 
-      // Carousel constants
-      const COVER = cssNum("--cover");
-      const TILT_FRONT = cssNum("--tiltFront");
-      const TILT_BACK = cssNum("--tiltBack");
-      const DEPTH = cssNum("--depth");
-      const RISE = cssNum("--rise");
-      const TAPER = cssNum("--taper");
-      const FLIP_MS = cssNum("--flipMs");
+      // Get current carousel constants (responsive)
+      function getCarouselConstants() {
+        return {
+          COVER: cssNum("--cover"),
+          TILT_FRONT: cssNum("--tiltFront"),
+          TILT_BACK: cssNum("--tiltBack"),
+          DEPTH: cssNum("--depth"),
+          RISE: cssNum("--rise"),
+          TAPER: cssNum("--taper"),
+          FLIP_MS: cssNum("--flipMs")
+        };
+      }
 
       const VISIBLE = Math.min(albums.length, 8);
       const DRAG_THRESHOLD_PX = 40;
@@ -466,6 +735,8 @@
         refreshImages();
         updateActiveAlbum(head);
 
+        const { TILT_FRONT } = getCarouselConstants();
+
         // Animate the front card with a smooth fade in
         cards[0].style.opacity = "0";
         cards[0].style.transform = `translate(-50%, -50%) translate3d(0px, 0px, 0px) rotateX(${TILT_FRONT}deg) scale(0.95)`;
@@ -537,6 +808,8 @@
       }
 
       function layoutWithShift(shift) {
+        const { COVER, TILT_FRONT, TILT_BACK, DEPTH, RISE, TAPER } = getCarouselConstants();
+
         for (let slot = 0; slot < VISIBLE; slot++) {
           const el = cards[slot];
           const slotPos = slot - shift;
@@ -558,6 +831,7 @@
       }
 
       function resetTopple() {
+        const { TILT_FRONT } = getCarouselConstants();
         frontFade.style.opacity = "0";
         frontFade.style.filter = "blur(0px)";
         frontFade.style.transform = `translate(-50%, -50%) rotateX(${TILT_FRONT}deg)`;
@@ -576,6 +850,8 @@
         progress = 0;
         lastTs = 0;
 
+        const { TILT_FRONT } = getCarouselConstants();
+
         frontFadeImg.src = albums[head].coverUrl;
         frontFade.style.opacity = String(1 - INSTANT_FADE);
         frontFade.style.filter = `blur(${INSTANT_BLUR.toFixed(2)}px)`;
@@ -588,6 +864,8 @@
       function tick(ts) {
         if (!animating) return;
         if (!lastTs) lastTs = ts;
+
+        const { FLIP_MS, TILT_FRONT } = getCarouselConstants();
 
         const dt = ts - lastTs;
         lastTs = ts;
@@ -684,6 +962,15 @@
           e.preventDefault();
           beginStep();
         }
+      });
+
+      // Handle window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          layoutWithShift(0);
+        }, 100);
       });
 
       // Initialize
