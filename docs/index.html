@@ -48,6 +48,8 @@
         transform-origin: center center;
         transform: translate(-50%, -50%) scale(var(--scale-factor));
         transition: transform 0.3s ease;
+        width: 402px;
+        height: 874px;
       }
 
       /* Main Frame Container - Original size maintained */
@@ -60,6 +62,7 @@
         overflow: hidden;
         border-radius: 50px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
       }
 
       /* Mobile: Remove border radius and shadow */
@@ -99,32 +102,41 @@
       .carousel-container {
         width: 100%;
         height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
         display: flex;
         justify-content: center;
         align-items: center;
-        perspective: var(--perspective);
-        perspective-origin: center center;
-        overflow: visible;
+      }
+
+      .perspective-wrapper {
+        position: absolute;
+        width: 402px;
+        height: 440px;
+        perspective: 1200px;
+        perspective-origin: 201px 220px;
+        transform-style: preserve-3d;
       }
 
       .stack {
-        position: relative;
-        width: var(--cover);
-        height: var(--cover);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 320px;
+        height: 320px;
         transform-style: preserve-3d;
-        transform: translateY(15px);
-        transform-origin: center center;
+        transform: translate(-50%, calc(-50% + 15px));
       }
 
       .card {
         position: absolute;
         left: 50%;
         top: 50%;
-        width: var(--w, var(--cover));
-        aspect-ratio: 1 / 1;
+        width: var(--w, 320px);
+        height: var(--w, 320px);
         transform-style: preserve-3d;
         transform: translate(-50%, -50%);
-        transform-origin: center center;
         overflow: hidden;
         background: #eee;
         will-change: transform, opacity;
@@ -146,10 +158,9 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        width: var(--cover);
-        height: var(--cover);
+        width: 320px;
+        height: 320px;
         transform: translate(-50%, -50%);
-        transform-origin: center center;
         overflow: hidden;
         pointer-events: none;
         opacity: 0;
@@ -307,7 +318,9 @@
         <!-- Interaction Zone -->
         <div class="interaction-zone" id="interactionZone">
           <div class="carousel-container">
-            <div class="stack" id="stack"></div>
+            <div class="perspective-wrapper">
+              <div class="stack" id="stack"></div>
+            </div>
           </div>
         </div>
 
@@ -397,19 +410,18 @@
       const albumListEl = document.getElementById("albumList");
 
       // Utility functions
-      const cssNum = (name) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
       const lerp = (a, b, t) => a + (b - a) * t;
       const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
       const mod = (n, m) => ((n % m) + m) % m;
 
-      // Carousel constants
-      const COVER = cssNum("--cover");
-      const TILT_FRONT = cssNum("--tiltFront");
-      const TILT_BACK = cssNum("--tiltBack");
-      const DEPTH = cssNum("--depth");
-      const RISE = cssNum("--rise");
-      const TAPER = cssNum("--taper");
-      const FLIP_MS = cssNum("--flipMs");
+      // Carousel constants - using fixed pixel values
+      const COVER = 320;
+      const TILT_FRONT = -22;
+      const TILT_BACK = -65;
+      const DEPTH = 80;
+      const RISE = 48;
+      const TAPER = 0.65;
+      const FLIP_MS = 700;
 
       const VISIBLE = Math.min(albums.length, 8);
       const DRAG_THRESHOLD_PX = 40;
