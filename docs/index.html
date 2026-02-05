@@ -20,7 +20,7 @@
 
         /* Carousel variables - scaled up */
         --cover: 320px;
-        --perspective: 1400px;
+        --perspective: 1200px;
         --tiltFront: -22deg;
         --tiltBack: -65deg;
         --depth: 80px;
@@ -103,8 +103,7 @@
         justify-content: center;
         align-items: center;
         perspective: var(--perspective);
-        perspective-origin: 50% 55%;
-        /* Allow content to extend and be clipped */
+        perspective-origin: center center;
         overflow: visible;
       }
 
@@ -113,8 +112,8 @@
         width: var(--cover);
         height: var(--cover);
         transform-style: preserve-3d;
-        /* Position stack centered with minimal offset */
         transform: translateY(15px);
+        transform-origin: center center;
       }
 
       .card {
@@ -125,6 +124,7 @@
         aspect-ratio: 1 / 1;
         transform-style: preserve-3d;
         transform: translate(-50%, -50%);
+        transform-origin: center center;
         overflow: hidden;
         background: #eee;
         will-change: transform, opacity;
@@ -149,12 +149,12 @@
         width: var(--cover);
         height: var(--cover);
         transform: translate(-50%, -50%);
+        transform-origin: center center;
         overflow: hidden;
         pointer-events: none;
         opacity: 0;
         will-change: transform, opacity, filter;
         z-index: 9999;
-        transform-origin: bottom center;
         box-shadow: 0 12px 40px rgba(0,0,0,0.25);
       }
 
@@ -343,6 +343,9 @@
           const mobileScaleHeight = window.innerHeight / frameHeight;
           scale = Math.min(mobileScaleWidth, mobileScaleHeight);
         }
+        
+        // 최소 스케일 제한 추가
+        scale = Math.max(scale, 0.5);
         
         document.documentElement.style.setProperty('--scale-factor', scale);
       }
