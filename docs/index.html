@@ -20,7 +20,7 @@
 
         /* Carousel variables - scaled up */
         --cover: 320px;
-        --perspective: 1200px;
+        --perspective: 1400px;
         --tiltFront: -22deg;
         --tiltBack: -65deg;
         --depth: 80px;
@@ -48,8 +48,6 @@
         transform-origin: center center;
         transform: translate(-50%, -50%) scale(var(--scale-factor));
         transition: transform 0.3s ease;
-        width: 402px;
-        height: 874px;
       }
 
       /* Main Frame Container - Original size maintained */
@@ -62,7 +60,6 @@
         overflow: hidden;
         border-radius: 50px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        position: relative;
       }
 
       /* Mobile: Remove border radius and shadow */
@@ -94,6 +91,7 @@
         position: relative;
         overflow: hidden;
         touch-action: none;
+        /* Clip everything outside this container */
         clip-path: inset(0);
         -webkit-clip-path: inset(0);
       }
@@ -101,42 +99,32 @@
       .carousel-container {
         width: 100%;
         height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
         display: flex;
         justify-content: center;
         align-items: center;
-      }
-
-      .perspective-wrapper {
-        position: absolute;
-        width: 402px;
-        height: 440px;
-        left: 0;
-        top: 0;
-        perspective: 1200px;
-        perspective-origin: 50% 50%;
-        transform-style: preserve-3d;
+        perspective: var(--perspective);
+        perspective-origin: 50% 55%;
+        /* Allow content to extend and be clipped */
+        overflow: visible;
       }
 
       .stack {
-        position: absolute;
-        left: 201px;
-        top: 235px;
-        width: 320px;
-        height: 320px;
+        position: relative;
+        width: var(--cover);
+        height: var(--cover);
         transform-style: preserve-3d;
+        /* Position stack centered with minimal offset */
+        transform: translateY(15px);
       }
 
       .card {
         position: absolute;
-        left: 0;
-        top: 0;
-        width: 320px;
-        height: 320px;
+        left: 50%;
+        top: 50%;
+        width: var(--w, var(--cover));
+        aspect-ratio: 1 / 1;
         transform-style: preserve-3d;
-        transform-origin: 160px 160px;
+        transform: translate(-50%, -50%);
         overflow: hidden;
         background: #eee;
         will-change: transform, opacity;
@@ -144,9 +132,9 @@
         box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1);
       }
 
-      .card img {
-        width: 320px;
-        height: 320px;
+      .card img, .frontFade img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
         display: block;
         pointer-events: none;
@@ -156,27 +144,18 @@
 
       .frontFade {
         position: absolute;
-        left: 0;
-        top: 0;
-        width: 320px;
-        height: 320px;
-        transform-origin: 160px 160px;
+        left: 50%;
+        top: 50%;
+        width: var(--cover);
+        height: var(--cover);
+        transform: translate(-50%, -50%);
         overflow: hidden;
         pointer-events: none;
         opacity: 0;
         will-change: transform, opacity, filter;
         z-index: 9999;
+        transform-origin: bottom center;
         box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-      }
-
-      .frontFade img {
-        width: 320px;
-        height: 320px;
-        object-fit: cover;
-        display: block;
-        pointer-events: none;
-        user-select: none;
-        -webkit-user-drag: none;
       }
 
       /* Album List */
@@ -328,9 +307,7 @@
         <!-- Interaction Zone -->
         <div class="interaction-zone" id="interactionZone">
           <div class="carousel-container">
-            <div class="perspective-wrapper">
-              <div class="stack" id="stack"></div>
-            </div>
+            <div class="stack" id="stack"></div>
           </div>
         </div>
 
@@ -349,27 +326,28 @@
       function calculateScale() {
         const frameHeight = 874;
         const frameWidth = 402;
-        const padding = 80;
+        const padding = 80; // Padding for spacing
         
         const availableHeight = window.innerHeight - padding;
-        const availableWidth = window.innerWidth - 40;
+        const availableWidth = window.innerWidth - 40; // Side padding
         
         const scaleByHeight = availableHeight / frameHeight;
         const scaleByWidth = availableWidth / frameWidth;
         
+        // Use the smaller scale to ensure it fits
         let scale = Math.min(scaleByHeight, scaleByWidth, 1);
         
+        // On mobile, use full width/height
         if (window.innerWidth <= 499) {
           const mobileScaleWidth = window.innerWidth / frameWidth;
           const mobileScaleHeight = window.innerHeight / frameHeight;
           scale = Math.min(mobileScaleWidth, mobileScaleHeight);
         }
         
-        scale = Math.max(scale, 0.5);
-        
         document.documentElement.style.setProperty('--scale-factor', scale);
       }
 
+      // Apply scale on load and resize
       calculateScale();
       window.addEventListener('resize', calculateScale);
 
@@ -410,22 +388,25 @@
         };
       });
 
+      // DOM Elements
       const stack = document.getElementById("stack");
       const interactionZone = document.getElementById("interactionZone");
       const albumListEl = document.getElementById("albumList");
 
+      // Utility functions
+      const cssNum = (name) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
       const lerp = (a, b, t) => a + (b - a) * t;
       const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
       const mod = (n, m) => ((n % m) + m) % m;
 
-      // Fixed pixel values
-      const COVER = 320;
-      const TILT_FRONT = -22;
-      const TILT_BACK = -65;
-      const DEPTH = 80;
-      const RISE = 48;
-      const TAPER = 0.65;
-      const FLIP_MS = 700;
+      // Carousel constants
+      const COVER = cssNum("--cover");
+      const TILT_FRONT = cssNum("--tiltFront");
+      const TILT_BACK = cssNum("--tiltBack");
+      const DEPTH = cssNum("--depth");
+      const RISE = cssNum("--rise");
+      const TAPER = cssNum("--taper");
+      const FLIP_MS = cssNum("--flipMs");
 
       const VISIBLE = Math.min(albums.length, 8);
       const DRAG_THRESHOLD_PX = 40;
@@ -448,12 +429,14 @@
       let lastTs = 0;
       let wheelAccum = 0;
 
+      // Easing functions
       function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
       function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
       function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
       function albumIndexForSlot(slot) { return mod(head + slot, albums.length); }
 
+      // Build Album List
       function buildAlbumList() {
         albumListEl.innerHTML = '';
         albums.forEach((album, index) => {
@@ -472,12 +455,14 @@
         });
       }
 
+      // Update active album in list
       function updateActiveAlbum(index) {
         const items = albumListEl.querySelectorAll('.album-item');
         items.forEach((item, i) => {
           item.classList.toggle('active', i === index);
         });
 
+        // Scroll the active item to the top of the list
         const activeItem = items[index];
         if (activeItem) {
           albumListEl.scrollTo({
@@ -487,6 +472,7 @@
         }
       }
 
+      // Smooth jump animation
       const JUMP_DURATION = 350;
       let jumping = false;
 
@@ -494,23 +480,28 @@
         if (animating || jumping || index === head) return;
         jumping = true;
 
+        // Update data immediately
         head = index;
         refreshImages();
         updateActiveAlbum(head);
 
+        // Animate the front card with a smooth fade in
         cards[0].style.opacity = "0";
-        cards[0].style.transform = `translate(-160px, -160px) translate3d(0px, 0px, 0px) rotateX(${TILT_FRONT}deg) scale(0.95)`;
+        cards[0].style.transform = `translate(-50%, -50%) translate3d(0px, 0px, 0px) rotateX(${TILT_FRONT}deg) scale(0.95)`;
 
         const startTime = performance.now();
 
         function animateJump(ts) {
           const elapsed = ts - startTime;
           const t = clamp(elapsed / JUMP_DURATION, 0, 1);
+
+          // Ease out cubic
           const easeT = 1 - Math.pow(1 - t, 3);
 
+          // Fade in and scale up
           cards[0].style.opacity = String(easeT);
           const scale = 0.95 + (0.05 * easeT);
-          cards[0].style.transform = `translate(-160px, -160px) translate3d(0px, 0px, 0px) rotateX(${TILT_FRONT}deg) scale(${scale})`;
+          cards[0].style.transform = `translate(-50%, -50%) translate3d(0px, 0px, 0px) rotateX(${TILT_FRONT}deg) scale(${scale})`;
 
           if (t < 1) {
             requestAnimationFrame(animateJump);
@@ -523,6 +514,7 @@
         requestAnimationFrame(animateJump);
       }
 
+      // Album list click handler
       albumListEl.addEventListener('click', (e) => {
         const item = e.target.closest('.album-item');
         if (!item) return;
@@ -532,6 +524,7 @@
         }
       });
 
+      // Create carousel cards
       const cards = Array.from({ length: VISIBLE }).map((_, slot) => {
         const el = document.createElement("div");
         el.className = "card";
@@ -543,6 +536,7 @@
         return el;
       });
 
+      // Create front fade overlay
       const frontFade = document.createElement("div");
       frontFade.className = "frontFade";
       const frontFadeImg = document.createElement("img");
@@ -576,10 +570,8 @@
           if (animating && slot === 0) el.style.opacity = "0";
           else el.style.opacity = "1";
 
-          // Use fixed center point (160px, 160px) for 320px card
-          el.style.transform = `translate(-160px, -160px) translate3d(0px, ${y}px, ${z}px) rotateX(${rotX}deg) scale(${scale})`;
-          el.style.width = `${w}px`;
-          el.style.height = `${w}px`;
+          el.style.setProperty("--w", `${w}px`);
+          el.style.transform = `translate(-50%, -50%) translate3d(0px, ${y}px, ${z}px) rotateX(${rotX}deg) scale(${scale})`;
           el.style.zIndex = String(1000 - Math.round(abs * 120));
         }
       }
@@ -587,7 +579,7 @@
       function resetTopple() {
         frontFade.style.opacity = "0";
         frontFade.style.filter = "blur(0px)";
-        frontFade.style.transform = `translate(-160px, -160px) rotateX(${TILT_FRONT}deg)`;
+        frontFade.style.transform = `translate(-50%, -50%) rotateX(${TILT_FRONT}deg)`;
       }
 
       function commitStep() {
@@ -606,7 +598,7 @@
         frontFadeImg.src = albums[head].coverUrl;
         frontFade.style.opacity = String(1 - INSTANT_FADE);
         frontFade.style.filter = `blur(${INSTANT_BLUR.toFixed(2)}px)`;
-        frontFade.style.transform = `translate(-160px, -160px) rotateX(${TILT_FRONT}deg)`;
+        frontFade.style.transform = `translate(-50%, -50%) rotateX(${TILT_FRONT}deg)`;
         cards[0].style.opacity = "0";
 
         requestAnimationFrame(tick);
@@ -622,6 +614,7 @@
 
         const t = clamp(progress, 0, 1);
         const fallT = easeOutQuart(t);
+        // Flip towards user (positive rotation instead of negative)
         const rotate = lerp(TILT_FRONT, -ROT_END, fallT);
         const popZ = lerp(0, POPZ_END, fallT);
         const dropY = lerp(0, DROPY_END, fallT * fallT);
@@ -637,7 +630,7 @@
 
         frontFade.style.opacity = String(opacity);
         frontFade.style.filter = `blur(${blur.toFixed(2)}px)`;
-        frontFade.style.transform = `translate(-160px, -160px) translate3d(0px, ${dropY.toFixed(2)}px, ${popZ.toFixed(2)}px) rotateX(${rotate.toFixed(2)}deg)`;
+        frontFade.style.transform = `translate(-50%, -50%) translate3d(0px, ${dropY.toFixed(2)}px, ${popZ.toFixed(2)}px) rotateX(${rotate.toFixed(2)}deg)`;
 
         let shiftT = 0;
         if (t > MOVE_START_RATIO) {
@@ -657,6 +650,7 @@
         requestAnimationFrame(tick);
       }
 
+      // Click on back cards to advance
       stack.addEventListener("click", (e) => {
         if (animating) return;
         const card = e.target.closest?.(".card");
@@ -665,6 +659,7 @@
         if (Number.isFinite(slot) && slot > 0) beginStep();
       });
 
+      // Drag interaction
       let isDown = false;
       let startY = 0;
       let dragTriggered = false;
@@ -691,6 +686,7 @@
       interactionZone.addEventListener("pointerup", endDrag);
       interactionZone.addEventListener("pointercancel", endDrag);
 
+      // Wheel interaction
       interactionZone.addEventListener("wheel", (e) => {
         e.preventDefault();
         if (animating || e.deltaY <= 0) return;
@@ -702,6 +698,7 @@
         }
       }, { passive: false });
 
+      // Keyboard interaction
       window.addEventListener("keydown", (e) => {
         if (!animating && (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ")) {
           e.preventDefault();
@@ -709,6 +706,7 @@
         }
       });
 
+      // Initialize
       buildAlbumList();
       refreshImages();
       updateActiveAlbum(head);
